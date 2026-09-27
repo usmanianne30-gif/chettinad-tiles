@@ -1,0 +1,70 @@
+===========================================================================
+  CHETTINAD TILES  -  SERVER DEPLOYMENT GUIDE
+  Deploy your own global server in 5 minutes (FREE)
+===========================================================================
+
+OPTION A: Render.com  (Recommended - Free forever)
+---------------------------------------------------
+1. Go to  https://render.com  and create a free account.
+2. Click  "New +"  ->  "Web Service"
+3. Choose  "Deploy an existing image or use a public Git repository"
+   OR: Create a new GitHub repository and push all files in this folder.
+4. Connect your GitHub repo (or use "Deploy from public URL").
+5. Fill in:
+     Name:           chettinad-tiles
+     Runtime:        Python 3
+     Build Command:  pip install -r requirements.txt
+     Start Command:  python server.py
+6. Click "Create Web Service".
+7. Wait ~2 minutes for it to deploy.
+8. Render will give you a URL like:  https://chettinad-tiles.onrender.com
+9. In the game, change the server URL to:
+     wss://chettinad-tiles.onrender.com
+
+Note: Free tier "sleeps" after 15 min inactivity. First connection may
+      take 30 seconds to wake up. Use UptimeRobot to keep it awake.
+
+---------------------------------------------------------------------------
+
+OPTION B: Railway.app  (Very easy, $5 free credit)
+----------------------------------------------------
+1. Install Railway CLI:  npm install -g @railway/cli
+2. Login:               railway login
+3. In this folder:      railway init
+4. Deploy:              railway up
+5. Get URL from:        railway open
+6. Change wss:// URL to your Railway domain.
+
+---------------------------------------------------------------------------
+
+OPTION C: Fly.io  (Free tier, excellent performance)
+----------------------------------------------------
+1. Install flyctl: https://fly.io/docs/hands-on/install-flyctl/
+2. Login:  flyctl auth login
+3. In this folder:
+      flyctl launch --name chettinad-tiles --no-deploy
+      flyctl deploy
+4. URL will be:  wss://chettinad-tiles.fly.dev
+
+---------------------------------------------------------------------------
+
+OPTION D: Local / LAN  (No internet required)
+-----------------------------------------------
+1. Run  run_server.bat  (in the server_deploy folder, or main game folder)
+2. Find your local IP: ipconfig  (look for IPv4 Address)
+3. In the game, set Server URL to:  ws://YOUR-LOCAL-IP:8765
+4. Other players on the same WiFi network can connect!
+
+---------------------------------------------------------------------------
+
+AFTER DEPLOYMENT: Update the game
+-----------------------------------
+The default server URL in the game is:
+  network.py  line 16:  SERVER_URL = "wss://chettinad-tiles.onrender.com"
+
+If you deploy to a different URL, either:
+  a) Tell players to manually enter the URL in the Server URL field
+     (bottom of the title screen)
+  b) Rebuild the exe after changing SERVER_URL in network.py
+
+===========================================================================

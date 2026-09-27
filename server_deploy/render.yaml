@@ -1,0 +1,16 @@
+{"services": [
+  {
+    "type": "web",
+    "name": "chettinad-tiles",
+    "runtime": "python",
+    "buildCommand": "pip install -r requirements.txt",
+    "startCommand": "python server.py",
+    "envVars": [
+      {
+        "key": "PORT",
+        "generateValue": false,
+        "value": "8765"
+      }
+    ]
+  }
+]}
