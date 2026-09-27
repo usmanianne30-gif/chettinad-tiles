@@ -9,6 +9,7 @@ import random
 import string
 import logging
 import os
+import http
 from typing import Optional
 
 import websockets
@@ -331,10 +332,15 @@ async def handler(ws):
                 await broadcast(lobby,{"type":"lobby_update","players":remaining,"msg":"A player disconnected."})
 
 
+async def health_check(connection, request):
+    if request.headers.get("Upgrade", "").lower() != "websocket":
+        return connection.respond(http.HTTPStatus.OK, "Chettinad Tiles WebSocket Server is Online!\n")
+    return None
+
 async def main():
     port=int(os.environ.get("PORT",8765)); host="0.0.0.0"
     log.info(f"Server on {host}:{port}")
-    async with websockets.serve(handler,host,port):
+    async with websockets.serve(handler,host,port,process_request=health_check):
         await asyncio.get_event_loop().create_future()
 
 if __name__=="__main__":
