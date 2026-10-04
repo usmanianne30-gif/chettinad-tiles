@@ -380,6 +380,16 @@ async def handler(ws: ServerConnection):
             elif mtype == "ready_next_round" and lobby and player:
                 await handle_ready_next(ws, lobby, player)
 
+            elif mtype == "emote" and lobby and player:
+                emoji = str(msg.get("emoji", "👋"))[:10]
+                text = str(msg.get("text", ""))[:40]
+                await broadcast(lobby, {
+                    "type": "player_emote",
+                    "pid": player.pid,
+                    "emoji": emoji,
+                    "text": text,
+                })
+
     except websockets.exceptions.ConnectionClosed:
         pass
     finally:

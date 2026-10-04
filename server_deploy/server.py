@@ -322,6 +322,9 @@ async def handler(ws):
             elif t=="start_game" and lobby and player: await handle_start(ws,lobby,player)
             elif t=="place_tiles" and lobby and player: await handle_place(ws,lobby,player,msg)
             elif t=="ready_next_round" and lobby and player: await handle_ready(ws,lobby,player)
+            elif t=="emote" and lobby and player:
+                emoji=str(msg.get("emoji","👋"))[:10]; text=str(msg.get("text",""))[:40]
+                await broadcast(lobby,{"type":"player_emote","pid":player.pid,"emoji":emoji,"text":text})
     except websockets.exceptions.ConnectionClosed: pass
     finally:
         log.info(f"Disconnected: {ws.remote_address}")
