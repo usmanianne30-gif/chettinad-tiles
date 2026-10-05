@@ -484,9 +484,9 @@ class GameClient:
         self.inp_name   = TextInput((cx - 160, 310, 320, 48), self.fnt_md, "Your Player Name…", 16)
         self.inp_code   = TextInput((cx - 160, 420, 220, 48), self.fnt_md, "Lobby Code", 6)
         self.btn_create = UnoButton((cx - 160, 500, 150, 50), "Host Game", self.fnt_md,
-                                    bg_color=PAL["uno_green"], icon="👑")
+                                    bg_color=PAL["uno_green"])
         self.btn_join   = UnoButton((cx + 10,  500, 150, 50), "Join Lobby", self.fnt_md,
-                                    bg_color=PAL["uno_blue"], icon="🚀")
+                                    bg_color=PAL["uno_blue"])
         self.btn_local  = UnoButton((cx - 100, 570, 200, 40), "Play Locally (LAN)", self.fnt_sm,
                                     bg_color=PAL["panel_border"])
         self.inp_server = TextInput((cx - 280, H - 65, 560, 36), self.fnt_sm,
@@ -495,23 +495,23 @@ class GameClient:
 
         # Lobby wait buttons
         self.btn_start = UnoButton((W // 2 - 120, H - 120, 240, 54), "START GAME", self.fnt_lg,
-                                   bg_color=PAL["uno_green"], icon="▶")
-        self.btn_copy  = UnoButton((W // 2 + 130, 195, 120, 38), "Copy", self.fnt_sm,
-                                   bg_color=PAL["uno_purple"], icon="📋")
+                                   bg_color=PAL["uno_green"])
+        self.btn_copy  = UnoButton((W // 2 + 130, 195, 120, 38), "Copy Code", self.fnt_sm,
+                                   bg_color=PAL["uno_purple"])
 
         # In-game buttons (Right-hand control dock)
         self.btn_done_placing = UnoButton((1010, 570, 210, 56), "DONE PLACING", self.fnt_lg,
-                                          bg_color=PAL["uno_green"], icon="✓")
-        self.btn_store_tile   = UnoButton((1010, 640, 210, 46), "→ TO STORAGE", self.fnt_md,
-                                          bg_color=PAL["uno_purple"], icon="📥")
+                                          bg_color=PAL["uno_green"])
+        self.btn_store_tile   = UnoButton((1010, 640, 210, 46), "-> TO STORAGE", self.fnt_md,
+                                          bg_color=PAL["uno_purple"])
         self.btn_undo         = UnoButton((1010, 700, 210, 42), "UNDO PLACED", self.fnt_sm,
-                                          bg_color=PAL["panel_border"], icon="↺")
+                                          bg_color=PAL["panel_border"])
         
         # Header quick buttons
-        self.btn_toggle_emotes = UnoButton((W - 130, 14, 110, 36), "Emotes", self.fnt_sm,
-                                           bg_color=PAL["uno_yellow"], text_color=PAL["text_dark"], icon="💬")
-        self.btn_toggle_rules  = UnoButton((W - 250, 14, 105, 36), "Rules", self.fnt_sm,
-                                           bg_color=PAL["uno_blue"], icon="📖")
+        self.btn_toggle_emotes = UnoButton((W - 130, 14, 110, 36), "EMOTES", self.fnt_sm,
+                                           bg_color=PAL["uno_yellow"], text_color=PAL["text_dark"])
+        self.btn_toggle_rules  = UnoButton((W - 250, 14, 105, 36), "RULES", self.fnt_sm,
+                                           bg_color=PAL["uno_blue"])
 
     def show_toast(self, text: str, duration: float = 3.5):
         self.toast_msg = text
@@ -886,17 +886,17 @@ class GameClient:
             draw_text(self.screen, opp["name"][:2].upper(), self.fnt_md, PAL["white"], *avatar_center)
             
             if pid == 0:
-                draw_text(self.screen, "👑", self.fnt_sm, PAL["gold"], avatar_center[0] + 16, avatar_center[1] - 18)
+                draw_text(self.screen, "HOST", self.fnt_badge, PAL["gold"], avatar_center[0] + 16, avatar_center[1] - 18)
 
             # Name & Score
             draw_text(self.screen, opp["name"][:10], self.fnt_sm, PAL["white"], ox + 18, oy - 14)
-            draw_text(self.screen, f"⭐ {opp.get('total_score', 0)} pts", self.fnt_badge, PAL["gold"], ox + 18, oy + 4)
+            draw_text(self.screen, f"{opp.get('total_score', 0)} PTS", self.fnt_badge, PAL["gold"], ox + 18, oy + 4)
 
             # Status pill (Placed or Thinking)
             f_data = opp.get("floor", [])
             tile_count = sum(1 for row in f_data for cell in row if cell)
             has_placed = (tile_count >= self.round * 4)  # rough check or from server flag
-            status_text = "READY ✓" if has_placed else "THINKING…"
+            status_text = "READY" if has_placed else "THINKING..."
             status_col  = PAL["uno_green"] if has_placed else PAL["uno_yellow"]
             draw_text(self.screen, status_text, self.fnt_badge, status_col, ox + 18, oy + 22)
 
@@ -908,8 +908,10 @@ class GameClient:
             if fl_data:
                 for r in range(4):
                     for c in range(4):
-                        if fl_data[r][c]:
-                            mc = MOTIF_COLOURS.get(fl_data[r][c]["motif"], (120, 120, 120))
+                        cell = fl_data[r][c]
+                        if cell:
+                            motif_name = cell.get("motif") if isinstance(cell, dict) else getattr(cell, "motif", "")
+                            mc = MOTIF_COLOURS.get(motif_name, (120, 120, 120))
                             mx_p = mini_r.x + 3 + c * 11
                             my_p = mini_r.y + 3 + r * 11
                             pygame.draw.rect(self.screen, mc, (mx_p, my_p, 9, 9), border_radius=2)
@@ -937,7 +939,7 @@ class GameClient:
         # Bubble pointer
         pts = [(cx - 6, bub_r.bottom), (cx + 6, bub_r.bottom), (cx, bub_r.bottom + 8)]
         pygame.draw.polygon(self.screen, PAL["cream"], pts)
-        draw_text(self.screen, f"{emoji} {text}", self.fnt_sm, PAL["text_dark"], bub_r.centerx, bub_r.centery)
+        draw_text(self.screen, text, self.fnt_sm, PAL["text_dark"], bub_r.centerx, bub_r.centery)
 
     # ── Center Table Arena (Goals & Supply Deck) ─────────────────────────────
     def _draw_center_arena(self, mx: int, my: int):
@@ -975,7 +977,7 @@ class GameClient:
 
             # Tooltip on hover
             if is_hover:
-                tip = f"Goal {gi+1}: Form {goal.motifs[0]} ➔ {goal.motifs[1]} ➔ {goal.motifs[2]} (H/V/Diag/L/Wrap)"
+                tip = f"Goal {gi+1}: Form {goal.motifs[0]} -> {goal.motifs[1]} -> {goal.motifs[2]} (H/V/Diag/L/Wrap)"
                 draw_text(self.screen, tip, self.fnt_sm, PAL["cream"], W // 2, gy + gh + 16)
 
         # 2. Supply Pile (Draw Deck) on Left
@@ -984,9 +986,11 @@ class GameClient:
         for layer in range(3, 0, -1):
             pygame.draw.rect(self.screen, (30, 26, 38), deck_r.move(layer * 2, layer * 2), border_radius=8)
         draw_rounded_rect(self.screen, PAL["panel"], deck_r, radius=8, border=2, border_color=PAL["table_gold"])
-        draw_text(self.screen, "SUPPLY", self.fnt_badge, PAL["gold"], deck_r.centerx, deck_r.y + 24)
-        draw_text(self.screen, "🎴", self.fnt_lg, PAL["white"], deck_r.centerx, deck_r.y + 50)
-        draw_text(self.screen, "TILES", self.fnt_badge, PAL["text_muted"], deck_r.centerx, deck_r.y + 74)
+        draw_text(self.screen, "SUPPLY", self.fnt_badge, PAL["gold"], deck_r.centerx, deck_r.y + 18)
+        tile_icon_r = pygame.Rect(deck_r.centerx - 14, deck_r.y + 36, 28, 28)
+        draw_rounded_rect(self.screen, PAL["tile_face"], tile_icon_r, radius=4, border=1, border_color=PAL["tile_border"])
+        aa_circle(self.screen, PAL["table_gold"], tile_icon_r.center, 6)
+        draw_text(self.screen, "DECK", self.fnt_badge, PAL["text_muted"], deck_r.centerx, deck_r.y + 76)
 
         # 3. Dynamic Center Phase Banner
         banner_r = pygame.Rect(W // 2 - 170, 375, 340, 36)

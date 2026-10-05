@@ -44,6 +44,8 @@ class Tile:
     def from_dict(d):
         if d is None:
             return None
+        if isinstance(d, Tile):
+            return d
         return Tile(d["motif"], d["centre"], d["tid"])
 
     def __repr__(self):
